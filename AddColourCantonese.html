@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <style>
+        .result {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        .result {
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+  <table>
+      <tr>
+        <td>
+            Cantonese traditional:
+        </td>
+        <td>
+            <textarea  id="traditional" rows="4" cols="50">
+            </textarea>
+
+        </td>
+      </tr>
+      <tr>
+          <td>
+              Cantonese jyutping:
+          </td>
+          <td>
+              <textarea  id="jyutping" rows="4" cols="50">
+              </textarea>
+          </td>
+      </tr>
+  </table>
+     <button onclick="transform()">Generate</button>
+    <br>
+    <br>
+<table class="result">
+    <tr class="result">
+        <td class="result">
+            Result traditional:
+        </td>
+        <td class="result">
+            <div id="result_traditional">
+            </div>
+        </td>
+  <tr class="result">
+    <td class="result">
+      Result jyutping:
+    </td>
+    <td class="result">
+      <div id="result_jyutping">
+      </div>
+    </td>
+  </tr>
+    <tr class="result">
+      <td class="result">
+        Result html traditional:
+      </td>
+      <td class="result">
+        <div id="result_html_traditional">
+        </div>
+      </td>
+  </tr>
+    <tr class="result">
+        <td class="result">
+            Result html jyutping:
+        </td>
+        <td class="result">
+            <div id="result_html_jyutping">
+            </div>
+        </td>
+    </tr>
+    </tr>
+    <tr class="result">
+        <td class="result">
+            All html ready to copy:
+        </td>
+        <td class="result">
+            <div id="result_html_all">
+            </div>
+        </td>
+    </tr>
+</table>
+
+<script>
+
+function transform(){
+
+    var jut = document.getElementById('jyutping').value,
+            tra = document.getElementById('traditional').value,
+            indexTrad = -1,
+            array_jut =[],
+            array_tra =[],
+            result_tra ='',
+            result_jut ='',
+            array_reg,
+            number,
+            start_color,
+            i,
+            char_at_tra;
+
+    jut = jut.replace(",",", ").trim();
+    tra = tra.trim();
+    array_jut = jut.trim().split(" ");
+    array_tra = tra.split("");
+
+    console.log(array_jut);
+    console.log(array_tra);
+
+    for(i=0;i<array_jut.length;i++){
+
+        console.log(result_tra);
+        console.log(result_jut);
+        indexTrad++;
+        char_at_tra = array_tra[indexTrad];
+        //situate the indexTrad in a point without , or . (so a real chinese character)
+        while(array_tra.length > indexTrad && (char_at_tra === '。' ||
+                char_at_tra ==='.'||
+                char_at_tra ===','||
+                char_at_tra ==='，' ||
+                char_at_tra === ' ') ||
+                (char_at_tra >= 'a' && char_at_tra <= 'z') ||
+                (char_at_tra >= 'A' && char_at_tra <= 'Z')){
+            result_tra = result_tra + char_at_tra;
+            indexTrad++;
+            char_at_tra = array_tra[indexTrad];
+
+        }
+
+        array_reg = array_jut[i].match(/[A-Za-z]+(\d)[\.,\?!]?/);
+        if(array_reg && array_reg.length >1){
+            number = array_reg[1];
+            start_color = '';
+            switch (number) {
+                case '1':
+                    start_color = "<font color=\"red\">";
+                    break;
+                case '2':
+                    start_color = "<font color=\"green\">";
+                    break;
+                case '3':
+                    start_color = "<font color=\"blue\">";
+                    break;
+                case '4':
+                    start_color = "<font color=\"orange\">";
+                    break;
+                case '5':
+                    start_color = "<font color=\"purple\">";
+                    break;
+                case '6':
+                    start_color = "<font color=\"grey\">";
+                    break;
+            }
+            //DO SOMETHING WITH
+            if(start_color.length >0){
+                result_jut  = result_jut + ' '+start_color + array_jut[i]+"</font>";
+                result_tra =  result_tra + (indexTrad< array_tra.length?start_color+char_at_tra+"</font>":'');
+            }else{
+                result_jut  = result_jut +' '+array_jut[i];
+                result_tra =  result_tra +' '+ (indexTrad <array_tra.length?char_at_tra:"");
+            }
+
+        }else{
+            //the jutping doesnt have a number (is a coma, or something else)
+            result_jut  = result_jut +' '+array_jut[i];
+            //since the indexTrad is pointing to a good character, we make it down (otherwhise we will lose it)
+            indexTrad--;
+        }
+
+
+    }
+    document.getElementById("result_jyutping").innerText = result_jut;
+    document.getElementById("result_html_jyutping").innerHTML = result_jut;
+    document.getElementById("result_traditional").innerText = result_tra;
+    document.getElementById("result_html_traditional").innerHTML = result_tra;
+    document.getElementById("result_html_all").innerText = result_tra+'</br></br>'+result_jut;
+
+}
+</script>
+
+</body>
+</html>
